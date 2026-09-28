@@ -119,15 +119,39 @@
   var ENDPOINT = 'https://script.google.com/macros/s/AKfycbykDRC_ClIg6aw_BS9NG8Hqdb0b8FPX-an8pwFUI5OlowfQEmwC5nZH2N1aomz3TzN_/exec';
   var ORIGEN = (new URLSearchParams(location.search).get('o') || 'directo').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'directo';
 
-  function enviar(datos) {
+  function enviarUnaVez(datos, ms) {
     // texto plano y sin cookies: así no importa cuántas cuentas de Google tenga abiertas el celular
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var reloj = ctrl ? setTimeout(function () { ctrl.abort(); }, ms) : null;
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(datos),
       credentials: 'omit',
-      redirect: 'follow'
-    }).then(function (r) { return r.json(); });
+      redirect: 'follow',
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) { return r.json(); })
+      .finally(function () { if (reloj) clearTimeout(reloj); });
+  }
+
+  // Google a veces tarda en "despertar": se reintenta con el mismo id y el servidor no duplica.
+  function enviar(datos, alReintentar) {
+    var esperas = [0, 2000, 4000];
+    var i = 0;
+    function intento() {
+      return enviarUnaVez(datos, 20000).catch(function (e) {
+        i++;
+        if (i >= esperas.length) throw e;
+        if (alReintentar) alReintentar(i);
+        return new Promise(function (ok) { setTimeout(ok, esperas[i]); }).then(intento);
+      });
+    }
+    return intento();
+  }
+
+  function nuevoId() {
+    try { return crypto.randomUUID(); } catch (e) {}
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
   }
 
   // cuenta el escaneo una sola vez por visita (si recarga, no se cuenta doble)
@@ -139,6 +163,7 @@
     try { sessionStorage.setItem(clave, '1'); } catch (e) {}
   })();
 
+  var idEnvio = null; // el mismo en todos los reintentos de este formulario
   var f = document.getElementById('f');
   var btn = document.getElementById('enviar');
   var err = document.getElementById('error');
@@ -156,8 +181,10 @@
   f.addEventListener('submit', function (ev) {
     ev.preventDefault();
     err.textContent = '';
+    if (!idEnvio) idEnvio = nuevoId();
     var datos = {
       accion: 'contacto',
+      id: idEnvio,
       nombre: document.getElementById('nombre').value.trim(),
       whatsapp: document.getElementById('whatsapp').value.trim(),
       area: document.getElementById('area').value.trim(),
@@ -173,7 +200,7 @@
 
     btn.disabled = true;
     btn.textContent = 'Enviando…';
-    enviar(datos).then(function (r) {
+    enviar(datos, function () { btn.textContent = 'Casi listo…'; }).then(function (r) {
       if (r && r.ok) {
         document.getElementById('paso1').hidden = true;
         document.getElementById('paso2').hidden = false;
@@ -182,7 +209,7 @@
         reactivar((r && r.error) || 'No se pudo enviar. Intenta otra vez.');
       }
     }).catch(function () {
-      reactivar('No se pudo enviar. Revisa tu señal e intenta otra vez.');
+      reactivar('No se pudo enviar. Revisa tu señal y dale Enviar otra vez: no se va a repetir.');
     });
   });
 </script>
