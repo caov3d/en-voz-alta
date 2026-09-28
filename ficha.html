@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Ficha de afiliación · Sintralimenticia</title>
+<title>Solicitud de afiliación · Sintralimenticia</title>
 <meta name="theme-color" content="#141414">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,11 +72,11 @@
 </head>
 <body>
 <main>
-  <div class="sello"><b>¿?</b><div><strong>FICHA DE AFILIACIÓN</strong><span>Sintralimenticia · Sindicato Nacional de Trabajadores del Sistema Alimentario · Subdirectiva Medellín</span></div></div>
+  <div class="sello"><b>¿?</b><div><strong>SOLICITUD DE AFILIACIÓN</strong><span>Sintralimenticia · Sindicato Nacional de Trabajadores del Sistema Alimentario · Subdirectiva Medellín</span></div></div>
 
   <section id="inicio" class="paso">
-    <h1>Afíliate <em>en 3 minutos</em></h1>
-    <p>Son los mismos datos de la ficha en papel. Lo que escribas se va guardando <b>en este celular</b>: si te toca parar, sigues después desde el mismo enlace.</p>
+    <h1>Pide tu afiliación <em>en 3 minutos</em></h1>
+    <p>Es la misma ficha en papel: al firmarla <b>solicitas</b> la afiliación, y la junta la revisa y te confirma. Lo que escribas se va guardando <b>en este celular</b>: si te toca parar, sigues después desde el mismo enlace.</p>
     <p class="tip">Tus datos solo los ve la junta del sindicato. No se comparten con la empresa.</p>
   </section>
 
@@ -179,8 +179,9 @@
   </section>
 
   <section id="listo" class="paso" hidden>
-    <h1>¡Bienvenido <em>al sindicato!</em></h1>
-    <p>Tu ficha llegó a la junta. Un compañero te confirma cuando quede radicada.</p>
+    <h1>Solicitud <em>enviada</em></h1>
+    <p>Tu ficha llegó a la junta. Ellos la revisan y la radican; <b>un compañero te confirma cuando ya quedes afiliado</b>.</p>
+    <p>Mientras tanto, cualquier duda, pregúntale a tu delegado.</p>
     <p class="tip">El sindicato somos todos.</p>
   </section>
 
@@ -242,7 +243,7 @@
     document.querySelectorAll('.progreso i').forEach(function (i, k) { i.classList.toggle('on', k < n); });
     $('pasoNum').textContent = 'Paso ' + n + ' de 4';
     $('atras').hidden = n === 1;
-    $('siguiente').textContent = n === 4 ? 'Enviar mi ficha' : 'Siguiente';
+    $('siguiente').textContent = n === 4 ? 'Enviar mi solicitud' : 'Siguiente';
     $('inicio').hidden = n !== 1;
     err.textContent = '';
     if (n === 4) { ajustarLienzo(); }
@@ -332,11 +333,11 @@
         window.scrollTo(0, 0);
       } else {
         err.textContent = (res && res.error) || 'No se pudo enviar. Intenta otra vez.';
-        btn.disabled = false; btn.textContent = 'Enviar mi ficha';
+        btn.disabled = false; btn.textContent = 'Enviar mi solicitud';
       }
     }).catch(function () {
       err.textContent = 'No se pudo enviar. Revisa tu señal y dale Enviar otra vez: no se va a repetir. Tus datos siguen guardados.';
-      btn.disabled = false; btn.textContent = 'Enviar mi ficha';
+      btn.disabled = false; btn.textContent = 'Enviar mi solicitud';
     });
   }
 
@@ -344,7 +345,7 @@
   $('despues').addEventListener('click', function () {
     guardar();
     var url = enlaceFicha();
-    $('waEnlace').href = 'https://wa.me/?text=' + encodeURIComponent('Mi ficha de afiliación a Sintralimenticia, para terminarla cuando pueda: ' + url);
+    $('waEnlace').href = 'https://wa.me/?text=' + encodeURIComponent('Mi solicitud de afiliación a Sintralimenticia, para terminarla cuando pueda: ' + url);
     $('f').hidden = true; document.querySelector('.progreso').hidden = true; $('pasoNum').hidden = true; $('inicio').hidden = true;
     $('guardado').hidden = false; window.scrollTo(0, 0);
   });
