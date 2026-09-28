@@ -143,6 +143,11 @@
       <h2>Tu firma</h2>
       <p class="declaracion">Con la presente, manifiesto mi decisión libre y espontánea de hacer uso del Libre Derecho de Asociación consagrado en la Constitución Política de Colombia, los convenios de la OIT y la Carta Universal de los Derechos Humanos. Solicito a la Junta Directiva Nacional del Sindicato Nacional de Trabajadores del Sistema Alimentario “SINTRALIMENTICIA” aceptar mi afiliación, y me comprometo a cumplir fielmente los estatutos del sindicato y los mandatos que en sus instancias democráticas se definan.</p>
       <label class="autoriza"><input type="checkbox" id="decision"><span>Esta es mi decisión libre y la firmo.</span></label>
+      <div class="declaracion" id="cartaTexto">
+        <b>Con la ficha va tu carta de renuncia al Pacto Colectivo</b>, dirigida a Gestión Humana de Alimentos Cárnicos S.A.S.:<br><br>
+        <i>“Yo <span id="cartaNombre">___</span>, con cédula de ciudadanía # <span id="cartaCedula">___</span>, me permito expresarles mi renuncia irrevocable al Pacto Colectivo, dicha decisión la he tomado por motivos personales.”</i>
+      </div>
+      <label class="autoriza"><input type="checkbox" id="renuncia"><span>Firmo también la carta de renuncia al Pacto Colectivo.</span></label>
       <label class="autoriza"><input type="checkbox" id="autoriza"><span>Autorizo al sindicato a guardar estos datos para tramitar mi afiliación.</span></label>
       <details>
         <summary>Leer la autorización de datos</summary>
@@ -182,12 +187,15 @@
     <h1>Solicitud <em>enviada</em></h1>
     <p>Tu ficha llegó a la junta. Ellos la revisan y la radican; <b>un compañero te confirma cuando ya quedes afiliado</b>.</p>
     <p>Mientras tanto, cualquier duda, pregúntale a tu delegado.</p>
+    <button type="button" id="descargar">Descargar mi ficha y mi carta</button>
+    <p class="tip">Es tu copia en PDF: la ficha de afiliación y la carta de renuncia al pacto, con tu firma. Guárdala o imprímela.</p>
     <p class="tip">El sindicato somos todos.</p>
   </section>
 
   <button type="button" class="link" id="borrarTodo" style="align-self:flex-start">Borrar lo que escribí en este celular</button>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="comun.js"></script>
 <script>
   var CAMPOS = ['nombres','apellidos','cedula','nacimiento','celular','fijo','correo','empresa','oficio','registro',
@@ -199,7 +207,7 @@
     4: []
   };
   var PREDETERMINADOS = { empresa: 'Alimentos Cárnicos S.A.S.', munEmpresa: 'Envigado', depEmpresa: 'Antioquia', depResidencia: 'Antioquia' };
-  var paso = 1, idEnvio = null;
+  var paso = 1, idEnvio = null, enviados = null;
   var $ = function (id) { return document.getElementById(id); };
   var err = $('error');
 
@@ -246,7 +254,11 @@
     $('siguiente').textContent = n === 4 ? 'Enviar mi solicitud' : 'Siguiente';
     $('inicio').hidden = n !== 1;
     err.textContent = '';
-    if (n === 4) { ajustarLienzo(); }
+    if (n === 4) {
+      ajustarLienzo();
+      $('cartaNombre').textContent = ($('nombres').value + ' ' + $('apellidos').value).trim() || '___';
+      $('cartaCedula').textContent = $('cedula').value.trim() || '___';
+    }
     guardar();
     window.scrollTo(0, 0);
   }
@@ -265,7 +277,7 @@
     }
     if (n === 2 && !document.querySelector('input[name="contrato"]:checked')) return 'Escoge tu tipo de contrato (si no sabes, toca "No sé").';
     if (n === 4) {
-      if (!$('decision').checked || !$('autoriza').checked) return 'Marca las dos casillas para poder enviar.';
+      if (!$('decision').checked || !$('renuncia').checked || !$('autoriza').checked) return 'Marca las tres casillas para poder enviar.';
       if (!hayFirma) return 'Falta tu firma en el recuadro blanco.';
     }
     return '';
@@ -319,7 +331,7 @@
   function enviarFicha() {
     if (!idEnvio) { idEnvio = nuevoId(); guardar(); }
     var datos = { accion: 'ficha', id: idEnvio, origen: ORIGEN, web: $('web').value,
-      decision: $('decision').checked, autoriza: $('autoriza').checked, firma: firmaComoImagen(),
+      decision: $('decision').checked, renuncia: $('renuncia').checked, autoriza: $('autoriza').checked, firma: firmaComoImagen(),
       servicio: calcularServicio() };
     CAMPOS.forEach(function (c) { datos[c] = $(c).value.trim(); });
     var r = document.querySelector('input[name="contrato"]:checked'); datos.contrato = r ? r.value : '';
@@ -327,6 +339,7 @@
     btn.disabled = true; btn.textContent = 'Enviando…';
     enviar(datos, function () { btn.textContent = 'Casi listo…'; }).then(function (res) {
       if (res && res.ok) {
+        enviados = datos;
         borrarBorrador();
         $('f').hidden = true; document.querySelector('.progreso').hidden = true; $('pasoNum').hidden = true;
         $('inicio').hidden = true; $('borrarTodo').hidden = true; $('listo').hidden = false;
@@ -369,6 +382,76 @@
   });
 
   mostrar(paso);
+
+  // ---------- copia en PDF para la persona ----------
+  function cargarImagen(src) {
+    return new Promise(function (ok) {
+      var im = new Image(); im.onload = function () { ok(im); }; im.onerror = function () { ok(null); }; im.src = src;
+    });
+  }
+  $('descargar').addEventListener('click', function () {
+    if (!enviados || !window.jspdf) { alert('No se pudo preparar el PDF. Pídele la copia a tu delegado.'); return; }
+    var d = enviados, btn = this;
+    btn.disabled = true; btn.textContent = 'Preparando…';
+    cargarImagen('logo.jpg').then(function (logo) {
+      var doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'letter' });
+      var W = 215.9, x = 20, y;
+      var hoyTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+      // página 1: ficha
+      if (logo) doc.addImage(logo, 'JPEG', 18, 12, 24, 24 * logo.height / logo.width);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+      doc.text('SINDICATO NACIONAL DE TRABAJADORES DEL', 120, 18, { align: 'center' });
+      doc.text('SISTEMA ALIMENTARIO', 120, 24, { align: 'center' });
+      doc.setFontSize(11); doc.text('- SINTRALIMENTICIA - Subdirectiva Medellín', 120, 30, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+      doc.text('NIT 890985343-7 · Personería Jurídica 03095 de octubre 9 de 1984 · Filial de la CUT', 120, 35, { align: 'center' });
+      doc.setFontSize(12); doc.text('SOLICITUD DE AFILIACIÓN', W / 2, 50, { align: 'center' });
+      doc.setFontSize(9.5);
+      var decl = 'Con la presente, manifiesto mi decisión libre y espontánea de hacer uso del Libre Derecho de Asociación consagrado en la Constitución Política De Colombia, los convenios de la OIT y la Carta Universal de los Derechos Humanos. Por lo anterior solicito a ustedes para en calidad de Junta Directiva Nacional SINDICATO NACIONAL DE TRABAJADORES DEL SISTEMA ALIMENTARIO “SINTRALIMENTICIA”, se sirvan aceptar mi afiliación, me comprometo a cumplir fielmente con los estatutos del sindicato y los mandatos que en sus instancias democráticas se definan.';
+      doc.text(doc.splitTextToSize(decl, W - 40), x, 58, { align: 'justify', maxWidth: W - 40 });
+      var fc = function (v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : (v || ''); };
+      var filas = [
+        ['NOMBRES', d.nombres, 'APELLIDOS', d.apellidos], ['CÉDULA', d.cedula, 'REGISTRO', d.registro],
+        ['FECHA DE NACIMIENTO', fc(d.nacimiento), 'TIPO DE CONTRATO', d.contrato], ['EMPRESA DONDE TRABAJA', d.empresa, 'OFICIO', d.oficio],
+        ['DIRECCIÓN DE LA EMPRESA', d.dirEmpresa, 'MUNICIPIO / DEPTO.', [d.munEmpresa, d.depEmpresa].filter(Boolean).join(', ')],
+        ['FECHA INGRESO A LA EMPRESA', fc(d.ingreso), 'TIEMPO DE SERVICIOS', d.servicio],
+        ['DIRECCIÓN RESIDENCIA', d.dirResidencia, 'MUNICIPIO / DEPTO.', [d.munResidencia, d.depResidencia].filter(Boolean).join(', ')],
+        ['TELÉFONO FIJO', d.fijo, 'CELULAR', d.celular], ['CORREO ELECTRÓNICO', d.correo, 'FECHA DE AFILIACIÓN', hoyTxt]
+      ];
+      y = 92;
+      filas.forEach(function (f) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text(f[0], x, y); doc.text(f[2], 112, y);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+        doc.text(String(f[1] || ''), x, y + 5, { maxWidth: 88 }); doc.text(String(f[3] || ''), 112, y + 5, { maxWidth: 84 });
+        doc.setDrawColor(150); doc.line(x, y + 7, W - 20, y + 7);
+        y += 13;
+      });
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text('FIRMA', x, y + 2);
+      doc.addImage(d.firma, d.firma.indexOf('image/jpeg') > 0 ? 'JPEG' : 'PNG', x, y + 3, 60, 20);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+      doc.text('Solicitud diligenciada en línea con autorización de datos (Ley 1581 de 2012). Pendiente de aprobación por la Junta Directiva.', x, y + 30);
+      doc.text('Cra 52 No 2-38 Guayabal Medellín · Sintralimenticia Junta Nacional – Subdirectiva Medellín · sintralimenticia@gmail.com', W / 2, 262, { align: 'center' });
+      // página 2: renuncia al pacto
+      doc.addPage(); doc.setFontSize(11.5); y = 28;
+      var f = new Date(), meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      doc.text('Medellín, ' + f.getDate() + ' de ' + meses[f.getMonth()] + ' del ' + f.getFullYear(), x, y);
+      y += 24; doc.text('Señores', x, y);
+      doc.setFont('helvetica', 'bold'); doc.text('Gestión Humana', x, y + 6); doc.text('Alimentos Cárnicos S.A.S.', x, y + 12);
+      y += 28; doc.setFont('helvetica', 'bolditalic'); doc.text('Asunto', x, y);
+      doc.setFont('helvetica', 'italic'); doc.text(': Renuncia al Pacto Colectivo', x + 14, y);
+      doc.setFont('helvetica', 'normal'); y += 10;
+      var nombre = (d.nombres + ' ' + d.apellidos).trim();
+      var cuerpo = 'Reciban un cordial y respetuoso saludo. Yo ' + nombre + ' con cédula de ciudadanía # ' + d.cedula + '. Me permito expresarles mi renuncia irrevocable al Pacto Colectivo, dicha decisión la he tomado por motivos personales. Es mi oportunidad para agradecerle la oportunidad que se me ha brindado.';
+      var lin = doc.splitTextToSize(cuerpo, W - 40); doc.text(lin, x, y); y += lin.length * 6 + 6;
+      lin = doc.splitTextToSize('Sin más a que hacer referencia, y en espera de su comprensión y mayor consideración.', W - 40);
+      doc.text(lin, x, y); y += lin.length * 6 + 16;
+      doc.text('Atentamente,', x, y);
+      doc.addImage(d.firma, d.firma.indexOf('image/jpeg') > 0 ? 'JPEG' : 'PNG', x, y + 4, 60, 20);
+      doc.text(nombre, x, y + 30); doc.text('CC. ' + d.cedula, x, y + 36);
+      doc.save('Ficha y renuncia al pacto - ' + nombre + '.pdf');
+      btn.disabled = false; btn.textContent = 'Descargar de nuevo';
+    });
+  });
 </script>
 </body>
 </html>
