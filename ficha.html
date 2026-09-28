@@ -16,6 +16,8 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--negro);color:#fff;font-family:var(--body);font-size:18px;line-height:1.45}
   main{max-width:520px;margin:0 auto;padding:24px 20px 48px;display:flex;flex-direction:column;gap:20px}
+  .atras{align-self:flex-start;color:var(--gris);font-weight:700;font-size:16px;text-decoration:none}
+  .atras:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
   .sello{display:flex;align-items:center;gap:12px}
   .sello b{display:grid;place-items:center;width:52px;height:52px;background:var(--rojo);font-family:var(--display);font-size:44px;line-height:1;flex:none}
   .sello div{display:flex;flex-direction:column;line-height:1.15}
@@ -72,6 +74,7 @@
 </head>
 <body>
 <main>
+  <a class="atras" id="volverInicio" href="./">← Volver</a>
   <div class="sello"><b>¿?</b><div><strong>SOLICITUD DE AFILIACIÓN</strong><span>Sintralimenticia · Sindicato Nacional de Trabajadores del Sistema Alimentario · Subdirectiva Medellín</span></div></div>
 
   <section id="inicio" class="paso">
@@ -198,6 +201,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="comun.js"></script>
 <script>
+  document.getElementById("volverInicio").href = './?o=' + encodeURIComponent(ORIGEN);
   var CAMPOS = ['nombres','apellidos','cedula','nacimiento','celular','fijo','correo','empresa','oficio','registro',
     'ingreso','dirEmpresa','munEmpresa','depEmpresa','dirResidencia','munResidencia','depResidencia'];
   var OBLIGATORIOS = {
