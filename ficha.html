@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ficha de afiliación · Sintralimenticia</title>
+<meta name="theme-color" content="#141414">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Atkinson+Hyperlegible+Next:wght@400;700;800&display=swap">
+<style>
+  :root{--negro:#141414;--rojo:#d7263d;--amarillo:#ffc400;--gris:#b8b2ad;--linea:#3a3533;--campo:#1e1b1a;
+    --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+    --body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,sans-serif;color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--negro);color:#fff;font-family:var(--body);font-size:18px;line-height:1.45}
+  main{max-width:520px;margin:0 auto;padding:24px 20px 48px;display:flex;flex-direction:column;gap:20px}
+  .sello{display:flex;align-items:center;gap:12px}
+  .sello b{display:grid;place-items:center;width:52px;height:52px;background:var(--rojo);font-family:var(--display);font-size:44px;line-height:1;flex:none}
+  .sello div{display:flex;flex-direction:column;line-height:1.15}
+  .sello strong{font-family:var(--display);font-size:28px;letter-spacing:.02em}
+  .sello span{font-size:13px;color:var(--gris)}
+  h1{font-family:var(--display);font-weight:900;font-size:52px;line-height:.9;margin:0;text-transform:uppercase}
+  h1 em{font-style:normal;color:var(--rojo)}
+  h2{font-family:var(--display);font-weight:900;font-size:36px;line-height:1;margin:0;text-transform:uppercase}
+  p{margin:0}
+  .tip{font-size:15px;color:var(--gris);border-left:4px solid var(--amarillo);padding-left:12px}
+  .progreso{display:flex;gap:6px}
+  .progreso i{flex:1;height:8px;border-radius:4px;background:var(--linea)}
+  .progreso i.on{background:var(--rojo)}
+  .paso-num{font-size:14px;color:var(--gris);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+  form, .paso{display:flex;flex-direction:column;gap:16px}
+  label.campo{display:flex;flex-direction:column;gap:6px;font-weight:700}
+  label.campo small{font-weight:400;color:var(--gris)}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:380px){.fila{grid-template-columns:1fr}}
+  input[type=text],input[type=tel],input[type=email],input[type=date]{font:inherit;font-size:19px;padding:13px;border:2px solid var(--linea);background:var(--campo);color:#fff;border-radius:8px;width:100%;min-height:52px}
+  input:focus-visible{outline:3px solid var(--amarillo);outline-offset:1px;border-color:transparent}
+  input.malo{border-color:var(--amarillo)}
+  fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+  legend{font-weight:700;margin-bottom:8px;padding:0}
+  .opciones{display:flex;flex-wrap:wrap;gap:8px}
+  .opciones label{flex:1 1 auto}
+  .opciones input{position:absolute;opacity:0;pointer-events:none}
+  .opciones span{display:block;text-align:center;padding:11px 12px;border:2px solid var(--linea);border-radius:8px;font-weight:700;cursor:pointer;font-size:16px}
+  .opciones input:checked + span{background:var(--rojo);border-color:var(--rojo)}
+  .opciones input:focus-visible + span{outline:3px solid var(--amarillo);outline-offset:1px}
+  .calculado{font-size:16px;color:var(--amarillo);font-weight:700;min-height:1.2em}
+  .declaracion{font-size:15px;color:#e6e1dc;background:#1e1b1a;border-radius:8px;padding:14px;border:1px solid var(--linea)}
+  .autoriza{display:flex;gap:12px;align-items:flex-start;font-size:15px}
+  .autoriza input{width:24px;height:24px;flex:none;margin-top:2px;accent-color:var(--rojo)}
+  details{font-size:14px;color:var(--gris)}
+  details summary{cursor:pointer;color:#fff;font-weight:700}
+  details p{margin-top:8px}
+  .firma-caja{position:relative;background:#fff;border-radius:8px;touch-action:none}
+  .firma-caja canvas{display:block;width:100%;height:180px;border-radius:8px;cursor:crosshair}
+  .firma-caja .linea{position:absolute;left:16px;right:16px;bottom:40px;border-bottom:2px dashed #b8b2ad;pointer-events:none}
+  .firma-caja .guia{position:absolute;left:16px;bottom:12px;font-size:13px;color:#8a8580;pointer-events:none}
+  .acciones{display:flex;gap:10px}
+  button{font:inherit;font-family:var(--display);font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:.02em;padding:13px;border:0;border-radius:8px;background:var(--rojo);color:#fff;cursor:pointer;flex:1}
+  button.sec{background:transparent;border:2px solid var(--linea);color:#fff;flex:0 0 auto;padding:13px 18px}
+  button.link{background:none;border:0;color:var(--gris);font-family:var(--body);font-size:15px;font-weight:700;text-transform:none;padding:4px;flex:0 0 auto;text-decoration:underline}
+  button:disabled{opacity:.6;cursor:wait}
+  button:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+  .error{color:var(--amarillo);font-weight:700;min-height:1.4em}
+  .caja-despues{display:flex;flex-direction:column;gap:12px;background:#1e1b1a;border:1px solid var(--linea);border-radius:8px;padding:16px}
+  .caja-despues a{display:block;text-align:center;padding:12px;border-radius:8px;background:#25d366;color:#0b2d17;font-weight:800;text-decoration:none}
+  .trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <div class="sello"><b>¿?</b><div><strong>FICHA DE AFILIACIÓN</strong><span>Sintralimenticia · Sindicato Nacional de Trabajadores del Sistema Alimentario · Subdirectiva Medellín</span></div></div>
+
+  <section id="inicio" class="paso">
+    <h1>Afíliate <em>en 3 minutos</em></h1>
+    <p>Son los mismos datos de la ficha en papel. Lo que escribas se va guardando <b>en este celular</b>: si te toca parar, sigues después desde el mismo enlace.</p>
+    <p class="tip">Tus datos solo los ve la junta del sindicato. No se comparten con la empresa.</p>
+  </section>
+
+  <div class="progreso" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <p class="paso-num" id="pasoNum">Paso 1 de 4</p>
+
+  <form id="f" novalidate>
+    <!-- Paso 1 -->
+    <section class="paso" data-paso="1">
+      <h2>Tus datos</h2>
+      <div class="fila">
+        <label class="campo">Nombres<input type="text" id="nombres" autocomplete="given-name" maxlength="60" required></label>
+        <label class="campo">Apellidos<input type="text" id="apellidos" autocomplete="family-name" maxlength="60" required></label>
+      </div>
+      <label class="campo">Cédula<input type="tel" id="cedula" inputmode="numeric" maxlength="15" required></label>
+      <label class="campo">Fecha de nacimiento<input type="date" id="nacimiento" required></label>
+      <div class="fila">
+        <label class="campo">Celular<input type="tel" id="celular" autocomplete="tel" inputmode="tel" maxlength="16" required></label>
+        <label class="campo">Teléfono fijo <small>Opcional</small><input type="tel" id="fijo" inputmode="tel" maxlength="16"></label>
+      </div>
+      <label class="campo">Correo electrónico <small>Opcional</small><input type="email" id="correo" autocomplete="email" maxlength="80"></label>
+    </section>
+
+    <!-- Paso 2 -->
+    <section class="paso" data-paso="2" hidden>
+      <h2>Tu trabajo</h2>
+      <label class="campo">Empresa<input type="text" id="empresa" maxlength="80" required></label>
+      <div class="fila">
+        <label class="campo">Oficio<input type="text" id="oficio" maxlength="60" placeholder="Ej.: operario de empaque" required></label>
+        <label class="campo">Registro <small>Código de empleado, si lo tienes</small><input type="text" id="registro" maxlength="20"></label>
+      </div>
+      <fieldset>
+        <legend>Tipo de contrato</legend>
+        <div class="opciones" id="contratos">
+          <label><input type="radio" name="contrato" value="Indefinido"><span>Indefinido</span></label>
+          <label><input type="radio" name="contrato" value="Término fijo"><span>Término fijo</span></label>
+          <label><input type="radio" name="contrato" value="Obra o labor"><span>Obra o labor</span></label>
+          <label><input type="radio" name="contrato" value="Temporal (EST)"><span>Temporal</span></label>
+          <label><input type="radio" name="contrato" value="Aprendiz"><span>Aprendiz</span></label>
+          <label><input type="radio" name="contrato" value="No sé"><span>No sé</span></label>
+        </div>
+      </fieldset>
+      <label class="campo">Fecha de ingreso a la empresa<input type="date" id="ingreso" required></label>
+      <p class="calculado" id="servicioTxt"></p>
+      <label class="campo">Dirección de la empresa<input type="text" id="dirEmpresa" maxlength="100"></label>
+      <div class="fila">
+        <label class="campo">Municipio<input type="text" id="munEmpresa" maxlength="40"></label>
+        <label class="campo">Departamento<input type="text" id="depEmpresa" maxlength="40"></label>
+      </div>
+    </section>
+
+    <!-- Paso 3 -->
+    <section class="paso" data-paso="3" hidden>
+      <h2>Dónde vives</h2>
+      <label class="campo">Dirección de residencia<input type="text" id="dirResidencia" autocomplete="street-address" maxlength="100" required></label>
+      <div class="fila">
+        <label class="campo">Municipio<input type="text" id="munResidencia" maxlength="40" required></label>
+        <label class="campo">Departamento<input type="text" id="depResidencia" maxlength="40" required></label>
+      </div>
+    </section>
+
+    <!-- Paso 4 -->
+    <section class="paso" data-paso="4" hidden>
+      <h2>Tu firma</h2>
+      <p class="declaracion">Con la presente, manifiesto mi decisión libre y espontánea de hacer uso del Libre Derecho de Asociación consagrado en la Constitución Política de Colombia, los convenios de la OIT y la Carta Universal de los Derechos Humanos. Solicito a la Junta Directiva Nacional del Sindicato Nacional de Trabajadores del Sistema Alimentario “SINTRALIMENTICIA” aceptar mi afiliación, y me comprometo a cumplir fielmente los estatutos del sindicato y los mandatos que en sus instancias democráticas se definan.</p>
+      <label class="autoriza"><input type="checkbox" id="decision"><span>Esta es mi decisión libre y la firmo.</span></label>
+      <label class="autoriza"><input type="checkbox" id="autoriza"><span>Autorizo al sindicato a guardar estos datos para tramitar mi afiliación.</span></label>
+      <details>
+        <summary>Leer la autorización de datos</summary>
+        <p>Autorizo a SINTRALIMENTICIA a guardar y usar los datos de esta ficha solo para tramitar y administrar mi afiliación. Entiendo que la afiliación sindical es un dato sensible, que no estoy obligado(a) a entregarlo y que mis datos no se compartirán con la empresa ni con terceros.</p>
+        <p>Puedo pedir en cualquier momento que los consulten, corrijan o borren escribiendo a sintralimenticia@gmail.com. Ley 1581 de 2012.</p>
+      </details>
+      <p style="font-weight:700">Firma aquí con el dedo</p>
+      <div class="firma-caja">
+        <canvas id="firma" aria-label="Espacio para firmar con el dedo"></canvas>
+        <div class="linea"></div><span class="guia">Firma sobre la línea</span>
+      </div>
+      <button type="button" class="link" id="borrarFirma">Borrar firma y volver a firmar</button>
+      <p class="tip" id="fechaAfiliacion"></p>
+    </section>
+
+    <div class="trampa" aria-hidden="true"><label>Sitio web <input type="text" id="web" tabindex="-1" autocomplete="off"></label></div>
+    <p class="error" id="error" role="alert"></p>
+    <div class="acciones">
+      <button type="button" class="sec" id="atras" hidden>Atrás</button>
+      <button type="button" id="siguiente">Siguiente</button>
+    </div>
+    <button type="button" class="link" id="despues">No tengo tiempo ahora: seguir después</button>
+  </form>
+
+  <section id="guardado" class="paso" hidden>
+    <h1>Quedó <em>guardado</em></h1>
+    <p>Lo que escribiste está en este celular. Cuando puedas, abre el mismo enlace y sigues donde ibas.</p>
+    <div class="caja-despues">
+      <p>Mándate el enlace por WhatsApp para no perderlo:</p>
+      <a id="waEnlace" href="#" target="_blank" rel="noopener">Enviarme el enlace por WhatsApp</a>
+      <button type="button" class="sec" id="copiarEnlace">Copiar enlace</button>
+    </div>
+    <button type="button" class="link" id="volver">Mejor sigo ahora</button>
+  </section>
+
+  <section id="listo" class="paso" hidden>
+    <h1>¡Bienvenido <em>al sindicato!</em></h1>
+    <p>Tu ficha llegó a la junta. Un compañero te confirma cuando quede radicada.</p>
+    <p class="tip">El sindicato somos todos.</p>
+  </section>
+
+  <button type="button" class="link" id="borrarTodo" style="align-self:flex-start">Borrar lo que escribí en este celular</button>
+</main>
+
+<script src="comun.js"></script>
+<script>
+  var CAMPOS = ['nombres','apellidos','cedula','nacimiento','celular','fijo','correo','empresa','oficio','registro',
+    'ingreso','dirEmpresa','munEmpresa','depEmpresa','dirResidencia','munResidencia','depResidencia'];
+  var OBLIGATORIOS = {
+    1: ['nombres','apellidos','cedula','nacimiento','celular'],
+    2: ['empresa','oficio','ingreso'],
+    3: ['dirResidencia','munResidencia','depResidencia'],
+    4: []
+  };
+  var PREDETERMINADOS = { empresa: 'Alimentos Cárnicos S.A.S.', munEmpresa: 'Envigado', depEmpresa: 'Antioquia', depResidencia: 'Antioquia' };
+  var paso = 1, idEnvio = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var err = $('error');
+
+  // ---------- borrador en el celular ----------
+  var b = leerBorrador();
+  CAMPOS.forEach(function (c) { $(c).value = b[c] || PREDETERMINADOS[c] || ''; });
+  if (b.contrato) { var r = document.querySelector('input[name="contrato"][value="' + b.contrato + '"]'); if (r) r.checked = true; }
+  if (b.paso) paso = Math.min(4, Math.max(1, b.paso));
+  idEnvio = b.id || null;
+
+  function guardar() {
+    var o = { paso: paso, id: idEnvio };
+    CAMPOS.forEach(function (c) { o[c] = $(c).value; });
+    var r = document.querySelector('input[name="contrato"]:checked');
+    o.contrato = r ? r.value : '';
+    guardarBorrador(o);
+  }
+  document.getElementById('f').addEventListener('input', function () { guardar(); calcularServicio(); });
+  document.getElementById('f').addEventListener('change', guardar);
+
+  // ---------- tiempo de servicio ----------
+  function calcularServicio() {
+    var v = $('ingreso').value, txt = '';
+    if (v) {
+      var d = new Date(v + 'T00:00:00'), hoy = new Date();
+      var meses = (hoy.getFullYear() - d.getFullYear()) * 12 + (hoy.getMonth() - d.getMonth()) - (hoy.getDate() < d.getDate() ? 1 : 0);
+      if (meses >= 0) {
+        var a = Math.floor(meses / 12), m = meses % 12;
+        txt = 'Tiempo de servicio: ' + (a ? a + (a === 1 ? ' año' : ' años') : '') + (a && m ? ' y ' : '') + (m || !a ? m + (m === 1 ? ' mes' : ' meses') : '');
+      }
+    }
+    $('servicioTxt').textContent = txt;
+    return txt.replace('Tiempo de servicio: ', '');
+  }
+  calcularServicio();
+
+  // ---------- pasos ----------
+  function mostrar(n) {
+    paso = n;
+    document.querySelectorAll('[data-paso]').forEach(function (s) { s.hidden = Number(s.dataset.paso) !== n; });
+    document.querySelectorAll('.progreso i').forEach(function (i, k) { i.classList.toggle('on', k < n); });
+    $('pasoNum').textContent = 'Paso ' + n + ' de 4';
+    $('atras').hidden = n === 1;
+    $('siguiente').textContent = n === 4 ? 'Enviar mi ficha' : 'Siguiente';
+    $('inicio').hidden = n !== 1;
+    err.textContent = '';
+    if (n === 4) { ajustarLienzo(); }
+    guardar();
+    window.scrollTo(0, 0);
+  }
+
+  function validar(n) {
+    var faltan = [];
+    document.querySelectorAll('input.malo').forEach(function (i) { i.classList.remove('malo'); });
+    OBLIGATORIOS[n].forEach(function (c) {
+      var v = $(c).value.trim();
+      if (v.length < 2) { faltan.push(c); $(c).classList.add('malo'); }
+    });
+    if (faltan.length) { $(faltan[0]).focus(); return 'Completa los campos marcados en amarillo.'; }
+    if (n === 1) {
+      if ($('cedula').value.replace(/\D/g, '').length < 5) { $('cedula').classList.add('malo'); return 'Revisa el número de cédula.'; }
+      if ($('celular').value.replace(/\D/g, '').length < 7) { $('celular').classList.add('malo'); return 'Revisa el número de celular.'; }
+    }
+    if (n === 2 && !document.querySelector('input[name="contrato"]:checked')) return 'Escoge tu tipo de contrato (si no sabes, toca "No sé").';
+    if (n === 4) {
+      if (!$('decision').checked || !$('autoriza').checked) return 'Marca las dos casillas para poder enviar.';
+      if (!hayFirma) return 'Falta tu firma en el recuadro blanco.';
+    }
+    return '';
+  }
+
+  $('siguiente').addEventListener('click', function () {
+    err.textContent = '';
+    var e = validar(paso);
+    if (e) { err.textContent = e; return; }
+    if (paso < 4) { mostrar(paso + 1); return; }
+    enviarFicha();
+  });
+  $('atras').addEventListener('click', function () { if (paso > 1) mostrar(paso - 1); });
+
+  // ---------- firma con el dedo ----------
+  var lienzo = $('firma'), ctx = lienzo.getContext('2d'), dibujando = false, hayFirma = false, ultimo = null;
+  function ajustarLienzo() {
+    var r = lienzo.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    if (!r.width) return;
+    var copia = hayFirma ? lienzo.toDataURL() : null;
+    lienzo.width = Math.round(r.width * dpr); lienzo.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#141414';
+    if (copia) { var im = new Image(); im.onload = function () { ctx.drawImage(im, 0, 0, r.width, r.height); }; im.src = copia; }
+  }
+  function punto(ev) { var r = lienzo.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+  lienzo.addEventListener('pointerdown', function (ev) { dibujando = true; ultimo = punto(ev); lienzo.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+  lienzo.addEventListener('pointermove', function (ev) {
+    if (!dibujando) return;
+    var p = punto(ev);
+    ctx.beginPath(); ctx.moveTo(ultimo.x, ultimo.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    ultimo = p; hayFirma = true; ev.preventDefault();
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { lienzo.addEventListener(t, function () { dibujando = false; }); });
+  $('borrarFirma').addEventListener('click', function () { ctx.clearRect(0, 0, lienzo.width, lienzo.height); hayFirma = false; });
+  window.addEventListener('resize', function () { if (paso === 4) ajustarLienzo(); });
+
+  function firmaComoImagen() {
+    // se reduce a 480x160 sobre blanco para que quepa en la hoja
+    var c = document.createElement('canvas'); c.width = 480; c.height = 160;
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 480, 160);
+    x.drawImage(lienzo, 0, 0, 480, 160);
+    var png = c.toDataURL('image/png');
+    return png.length < 45000 ? png : c.toDataURL('image/jpeg', 0.7);
+  }
+
+  var hoy = new Date();
+  $('fechaAfiliacion').textContent = 'Fecha de afiliación: ' + hoy.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // ---------- enviar ----------
+  function enviarFicha() {
+    if (!idEnvio) { idEnvio = nuevoId(); guardar(); }
+    var datos = { accion: 'ficha', id: idEnvio, origen: ORIGEN, web: $('web').value,
+      decision: $('decision').checked, autoriza: $('autoriza').checked, firma: firmaComoImagen(),
+      servicio: calcularServicio() };
+    CAMPOS.forEach(function (c) { datos[c] = $(c).value.trim(); });
+    var r = document.querySelector('input[name="contrato"]:checked'); datos.contrato = r ? r.value : '';
+    var btn = $('siguiente');
+    btn.disabled = true; btn.textContent = 'Enviando…';
+    enviar(datos, function () { btn.textContent = 'Casi listo…'; }).then(function (res) {
+      if (res && res.ok) {
+        borrarBorrador();
+        $('f').hidden = true; document.querySelector('.progreso').hidden = true; $('pasoNum').hidden = true;
+        $('inicio').hidden = true; $('borrarTodo').hidden = true; $('listo').hidden = false;
+        window.scrollTo(0, 0);
+      } else {
+        err.textContent = (res && res.error) || 'No se pudo enviar. Intenta otra vez.';
+        btn.disabled = false; btn.textContent = 'Enviar mi ficha';
+      }
+    }).catch(function () {
+      err.textContent = 'No se pudo enviar. Revisa tu señal y dale Enviar otra vez: no se va a repetir. Tus datos siguen guardados.';
+      btn.disabled = false; btn.textContent = 'Enviar mi ficha';
+    });
+  }
+
+  // ---------- seguir después ----------
+  $('despues').addEventListener('click', function () {
+    guardar();
+    var url = enlaceFicha();
+    $('waEnlace').href = 'https://wa.me/?text=' + encodeURIComponent('Mi ficha de afiliación a Sintralimenticia, para terminarla cuando pueda: ' + url);
+    $('f').hidden = true; document.querySelector('.progreso').hidden = true; $('pasoNum').hidden = true; $('inicio').hidden = true;
+    $('guardado').hidden = false; window.scrollTo(0, 0);
+  });
+  $('volver').addEventListener('click', function () {
+    $('guardado').hidden = true; $('f').hidden = false; document.querySelector('.progreso').hidden = false; $('pasoNum').hidden = false;
+    mostrar(paso);
+  });
+  $('copiarEnlace').addEventListener('click', function () {
+    var url = enlaceFicha(), boton = this;
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () {
+      boton.textContent = 'Enlace copiado';
+    }).catch(function () { prompt('Copia este enlace:', url); });
+  });
+  $('borrarTodo').addEventListener('click', function () {
+    borrarBorrador();
+    CAMPOS.forEach(function (c) { $(c).value = PREDETERMINADOS[c] || ''; });
+    document.querySelectorAll('input[name="contrato"]').forEach(function (i) { i.checked = false; });
+    idEnvio = null; hayFirma = false; ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+    calcularServicio(); mostrar(1);
+    err.textContent = 'Listo, se borró lo que habías escrito en este celular.';
+  });
+
+  mostrar(paso);
+</script>
+</body>
+</html>

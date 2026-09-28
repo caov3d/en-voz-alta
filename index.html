@@ -50,6 +50,12 @@
   .error{color:var(--amarillo);font-weight:700;min-height:1.4em}
   .listo{display:flex;flex-direction:column;gap:16px}
   .listo h1{font-size:72px}
+  .invita{display:flex;flex-direction:column;gap:12px;background:#1e1b1a;border:2px solid var(--rojo);border-radius:10px;padding:18px}
+  .invita-t{font-family:var(--display);font-size:34px;font-weight:900;text-transform:uppercase;line-height:1}
+  a.boton{display:block;text-align:center;font-family:var(--display);font-size:30px;font-weight:900;text-transform:uppercase;padding:13px;border-radius:8px;background:var(--rojo);color:#fff;text-decoration:none}
+  a.boton:focus-visible,.directo a:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+  .directo{font-size:16px;color:var(--gris)}
+  .directo a{color:#fff;font-weight:800}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -60,6 +66,7 @@
   <section id="paso1" style="display:flex;flex-direction:column;gap:22px">
     <h1>El sindicato <em>somos todos</em></h1>
     <p>Déjanos tus datos y un compañero del sindicato te escribe para contarte más. Sin compromiso.</p>
+    <p class="directo">¿Ya decidiste afiliarte? <a id="fichaDirecta" href="ficha.html">Llena tu ficha aquí</a></p>
     <p class="tip">Tus datos solo los ve la junta del sindicato. No se comparten con la empresa. Mejor usa tus datos móviles y no el wifi de la planta.</p>
 
     <form id="f" novalidate>
@@ -99,7 +106,7 @@
         <summary>Leer la autorización completa</summary>
         <p>Autorizo a Sintralimenticia · Seccional Alimentos Cárnicos a guardar y usar mi nombre, número de celular y área o turno solo para contactarme y darme información sobre el sindicato y el proceso de afiliación.</p>
         <p>Entiendo que mi interés en el sindicato es un dato sensible, que no estoy obligado(a) a entregarlo y que mis datos no se compartirán con la empresa ni con terceros.</p>
-        <p>Puedo pedir en cualquier momento que los consulten, corrijan o borren escribiendo a <span id="correo">caov3dv1@gmail.com</span>. Ley 1581 de 2012.</p>
+        <p>Puedo pedir en cualquier momento que los consulten, corrijan o borren escribiendo a sintralimenticia@gmail.com. Ley 1581 de 2012.</p>
       </details>
 
       <p class="error" id="error" role="alert"></p>
@@ -110,58 +117,19 @@
   <section id="paso2" class="listo" hidden>
     <h1>Listo.</h1>
     <p>Un compañero del sindicato te escribe pronto.</p>
+    <div class="invita" id="invitaFicha" hidden>
+      <p class="invita-t">Adelanta tu afiliación</p>
+      <p>Llena tu ficha desde el celular. Son 3 minutos y ya tiene lo que escribiste. Si no puedes ahora, se guarda y sigues después, o la llenas con el delegado.</p>
+      <a id="irFicha" class="boton" href="ficha.html">Llenar mi ficha</a>
+    </div>
     <p class="tip">El sindicato somos todos.</p>
   </section>
 </main>
 
+<script src="comun.js"></script>
 <script>
-  // Programa de Google que guarda en la hoja privada del sindicato.
-  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbykDRC_ClIg6aw_BS9NG8Hqdb0b8FPX-an8pwFUI5OlowfQEmwC5nZH2N1aomz3TzN_/exec';
-  var ORIGEN = (new URLSearchParams(location.search).get('o') || 'directo').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'directo';
-
-  function enviarUnaVez(datos, ms) {
-    // texto plano y sin cookies: así no importa cuántas cuentas de Google tenga abiertas el celular
-    var ctrl = window.AbortController ? new AbortController() : null;
-    var reloj = ctrl ? setTimeout(function () { ctrl.abort(); }, ms) : null;
-    return fetch(ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(datos),
-      credentials: 'omit',
-      redirect: 'follow',
-      signal: ctrl ? ctrl.signal : undefined
-    }).then(function (r) { return r.json(); })
-      .finally(function () { if (reloj) clearTimeout(reloj); });
-  }
-
-  // Google a veces tarda en "despertar": se reintenta con el mismo id y el servidor no duplica.
-  function enviar(datos, alReintentar) {
-    var esperas = [0, 2000, 4000];
-    var i = 0;
-    function intento() {
-      return enviarUnaVez(datos, 20000).catch(function (e) {
-        i++;
-        if (i >= esperas.length) throw e;
-        if (alReintentar) alReintentar(i);
-        return new Promise(function (ok) { setTimeout(ok, esperas[i]); }).then(intento);
-      });
-    }
-    return intento();
-  }
-
-  function nuevoId() {
-    try { return crypto.randomUUID(); } catch (e) {}
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-  }
-
-  // cuenta el escaneo una sola vez por visita (si recarga, no se cuenta doble)
-  (function () {
-    var clave = 'evz-escaneo-' + ORIGEN, visto = false;
-    try { visto = sessionStorage.getItem(clave) === '1'; } catch (e) {}
-    if (visto) return;
-    enviar({ accion: 'escaneo', origen: ORIGEN }).catch(function () {});
-    try { sessionStorage.setItem(clave, '1'); } catch (e) {}
-  })();
+  contarEscaneo();
+  document.getElementById('fichaDirecta').href = enlaceFicha();
 
   var idEnvio = null; // el mismo en todos los reintentos de este formulario
   var f = document.getElementById('f');
@@ -202,6 +170,17 @@
     btn.textContent = 'Enviando…';
     enviar(datos, function () { btn.textContent = 'Casi listo…'; }).then(function (r) {
       if (r && r.ok) {
+        // la ficha solo se ofrece a quien marcó "Quiero afiliarme"
+        var quiere = datos.interes === 'Quiero afiliarme';
+        document.getElementById('invitaFicha').hidden = !quiere;
+        if (quiere) {
+          var bb = leerBorrador();
+          if (!bb.nombres) bb.nombres = datos.nombre;
+          if (!bb.celular) bb.celular = datos.whatsapp;
+          if (!bb.oficio && datos.area) bb.oficio = datos.area;
+          guardarBorrador(bb);
+          document.getElementById('irFicha').href = enlaceFicha();
+        }
         document.getElementById('paso1').hidden = true;
         document.getElementById('paso2').hidden = false;
         window.scrollTo(0, 0);
