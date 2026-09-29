@@ -38,9 +38,9 @@
   #contratos{display:grid;grid-template-columns:1fr 1fr}
   .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
   @media (max-width:380px){.fila{grid-template-columns:1fr}}
-  input[type=text],input[type=tel],input[type=email],input[type=date]{font:inherit;font-size:19px;padding:13px;border:2px solid var(--linea);background:var(--campo);color:#fff;border-radius:8px;width:100%;min-height:52px}
-  input:focus-visible{outline:3px solid var(--amarillo);outline-offset:1px;border-color:transparent}
-  input.malo{border-color:var(--amarillo)}
+  input[type=text],input[type=tel],input[type=email],input[type=date],select{font:inherit;font-size:19px;padding:13px;border:2px solid var(--linea);background:var(--campo);color:#fff;border-radius:8px;width:100%;min-height:52px}
+  input:focus-visible,select:focus-visible{outline:3px solid var(--amarillo);outline-offset:1px;border-color:transparent}
+  input.malo,select.malo{border-color:var(--amarillo)}
   fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
   legend{font-weight:700;margin-bottom:8px;padding:0}
   .opciones{display:flex;flex-wrap:wrap;gap:8px}
@@ -107,8 +107,8 @@
     <!-- Paso 2 -->
     <section class="paso" data-paso="2" hidden>
       <h2>Tu trabajo</h2>
-      <p class="tip">Los datos de la empresa ya van llenos. Cámbialos solo si trabajas en otra sede.</p>
-      <label class="campo">Empresa<input type="text" id="empresa" maxlength="80" required></label>
+      <p class="tip">Escoge tu empresa: a ella va dirigida tu carta de renuncia al Pacto Colectivo.</p>
+      <label class="campo">Empresa<select id="empresa" required><option value="">Escoge tu empresa…</option></select></label>
       <div class="fila">
         <label class="campo">Oficio<input type="text" id="oficio" maxlength="60" placeholder="Ej.: empaque" required></label>
         <label class="campo"><span>Registro <small>(opcional)</small></span><input type="text" id="registro" maxlength="20" placeholder="Código de empleado"></label>
@@ -149,7 +149,7 @@
       <p class="declaracion">Con la presente, manifiesto mi decisión libre y espontánea de hacer uso del Libre Derecho de Asociación consagrado en la Constitución Política de Colombia, los convenios de la OIT y la Carta Universal de los Derechos Humanos. Solicito a la Junta Directiva Nacional del Sindicato Nacional de Trabajadores del Sistema Alimentario “SINTRALIMENTICIA” aceptar mi afiliación, y me comprometo a cumplir fielmente los estatutos del sindicato y los mandatos que en sus instancias democráticas se definan.</p>
       <label class="autoriza"><input type="checkbox" id="decision"><span>Esta es mi decisión libre y la firmo.</span></label>
       <div class="declaracion" id="cartaTexto">
-        <b>Con la ficha va tu carta de renuncia al Pacto Colectivo</b>, dirigida a Gestión Humana de Alimentos Cárnicos S.A.S.:<br><br>
+        <b>Con la ficha va tu carta de renuncia al Pacto Colectivo</b>, dirigida a Gestión Humana de <span id="cartaEmpresa">___</span>:<br><br>
         <i>“Yo <span id="cartaNombre">___</span>, con cédula de ciudadanía # <span id="cartaCedula">___</span>, me permito expresarles mi renuncia irrevocable al Pacto Colectivo, dicha decisión la he tomado por motivos personales.”</i>
       </div>
       <label class="autoriza"><input type="checkbox" id="renuncia"><span>Firmo también la carta de renuncia al Pacto Colectivo.</span></label>
@@ -212,17 +212,40 @@
     3: ['dirResidencia','munResidencia','depResidencia'],
     4: []
   };
-  // Datos de la planta de Envigado, para que nadie tenga que buscarlos (dirección tomada de directorios
-  // públicos de empresas, 28-sep-2026: confirmar con la junta).
-  var PREDETERMINADOS = { empresa: 'Alimentos Cárnicos S.A.S.', dirEmpresa: 'Calle 25A Sur # 48-150',
-    munEmpresa: 'Envigado', depEmpresa: 'Antioquia', depResidencia: 'Antioquia' };
+  // Empresas donde hay afiliados. Aquí se agrega, quita o corrige una: "nombre" es lo que se escoge en la lista Y
+  // a quién va dirigida la carta de renuncia al Pacto Colectivo (Gestión Humana de <nombre>). La dirección es opcional:
+  // solo se prellena la de Alimentos Cárnicos (de directorios públicos, 28-sep-2026: confirmar con la junta).
+  var EMPRESAS = [
+    { nombre: 'Industria de Alimentos Zenú S.A.S.' },
+    { nombre: 'Compañía de Galletas Noel S.A.S.' },
+    { nombre: 'Nutre Fríos' },
+    { nombre: 'Alimentos Cárnicos S.A.S.', dirEmpresa: 'Calle 25A Sur # 48-150', munEmpresa: 'Envigado', depEmpresa: 'Antioquia' }
+  ];
+  var CAMPOS_EMPRESA = ['dirEmpresa', 'munEmpresa', 'depEmpresa'];
+  var PREDETERMINADOS = { depResidencia: 'Antioquia' };
   var paso = 1, idEnvio = null, enviados = null;
   var $ = function (id) { return document.getElementById(id); };
   var err = $('error');
 
+  // ---------- empresa: se escoge de la lista ----------
+  EMPRESAS.forEach(function (e) {
+    var o = document.createElement('option'); o.value = e.nombre; o.textContent = e.nombre; $('empresa').appendChild(o);
+  });
+  function datosEmpresa() { return EMPRESAS.filter(function (x) { return x.nombre === $('empresa').value; })[0] || {}; }
+  var autoEmpresa = {}; // lo último que se llenó solo: así no se pisa lo que la persona corrigió a mano
+  function aplicarEmpresa() {
+    var e = datosEmpresa();
+    CAMPOS_EMPRESA.forEach(function (c) {
+      if (!$(c).value || $(c).value === autoEmpresa[c]) $(c).value = e[c] || '';
+      autoEmpresa[c] = e[c] || '';
+    });
+  }
+
   // ---------- borrador en el celular ----------
   var b = leerBorrador();
   CAMPOS.forEach(function (c) { $(c).value = b[c] || PREDETERMINADOS[c] || ''; });
+  (function () { var e = datosEmpresa(); CAMPOS_EMPRESA.forEach(function (c) { autoEmpresa[c] = e[c] || ''; }); })();
+  $('empresa').addEventListener('change', function () { this.classList.remove('malo'); aplicarEmpresa(); });
   if (b.contrato) { var r = document.querySelector('input[name="contrato"][value="' + b.contrato + '"]'); if (r) r.checked = true; }
   if (b.paso) paso = Math.min(4, Math.max(1, b.paso));
   idEnvio = b.id || null;
@@ -267,6 +290,7 @@
       ajustarLienzo();
       $('cartaNombre').textContent = ($('nombres').value + ' ' + $('apellidos').value).trim() || '___';
       $('cartaCedula').textContent = $('cedula').value.trim() || '___';
+      $('cartaEmpresa').textContent = $('empresa').value || '___';
     }
     guardar();
     window.scrollTo(0, 0);
@@ -274,7 +298,7 @@
 
   function validar(n) {
     var faltan = [];
-    document.querySelectorAll('input.malo').forEach(function (i) { i.classList.remove('malo'); });
+    document.querySelectorAll('.malo').forEach(function (i) { i.classList.remove('malo'); });
     OBLIGATORIOS[n].forEach(function (c) {
       var v = $(c).value.trim();
       if (v.length < 2) { faltan.push(c); $(c).classList.add('malo'); }
@@ -445,7 +469,7 @@
       var f = new Date(), meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
       doc.text('Medellín, ' + f.getDate() + ' de ' + meses[f.getMonth()] + ' del ' + f.getFullYear(), x, y);
       y += 24; doc.text('Señores', x, y);
-      doc.setFont('helvetica', 'bold'); doc.text('Gestión Humana', x, y + 6); doc.text('Alimentos Cárnicos S.A.S.', x, y + 12);
+      doc.setFont('helvetica', 'bold'); doc.text('Gestión Humana', x, y + 6); doc.text(d.empresa || '', x, y + 12);
       y += 28; doc.setFont('helvetica', 'bolditalic'); doc.text('Asunto', x, y);
       doc.setFont('helvetica', 'italic'); doc.text(': Renuncia al Pacto Colectivo', x + 14, y);
       doc.setFont('helvetica', 'normal'); y += 10;
