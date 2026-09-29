@@ -107,7 +107,7 @@
     <!-- Paso 2 -->
     <section class="paso" data-paso="2" hidden>
       <h2>Tu trabajo</h2>
-      <p class="tip">Escoge tu empresa: a ella va dirigida tu carta de renuncia al Pacto Colectivo.</p>
+      <p class="tip">Escoge tu empresa: a ella va dirigida tu carta de renuncia al Pacto Colectivo. La dirección se llena sola; cámbiala si trabajas en otra sede.</p>
       <label class="campo">Empresa<select id="empresa" required><option value="">Escoge tu empresa…</option></select></label>
       <div class="fila">
         <label class="campo">Oficio<input type="text" id="oficio" maxlength="60" placeholder="Ej.: empaque" required></label>
@@ -214,11 +214,12 @@
   };
   // Empresas donde hay afiliados. Aquí se agrega, quita o corrige una: "nombre" es lo que se escoge en la lista Y
   // a quién va dirigida la carta de renuncia al Pacto Colectivo (Gestión Humana de <nombre>). La dirección es opcional:
-  // solo se prellena la de Alimentos Cárnicos (de directorios públicos, 28-sep-2026: confirmar con la junta).
+  // se llena sola al escoger la empresa y la persona la puede cambiar. Salen de directorios públicos de empresas
+  // (29-sep-2026, son dirección registrada: confirmar con la junta). Nutre Fríos no apareció en fuentes públicas: Carlos dijo que comparte la de Zenú.
   var EMPRESAS = [
-    { nombre: 'Industria de Alimentos Zenú S.A.S.' },
-    { nombre: 'Compañía de Galletas Noel S.A.S.' },
-    { nombre: 'Nutre Fríos S.A.S.' },
+    { nombre: 'Industria de Alimentos Zenú S.A.S.', dirEmpresa: 'Carrera 64C # 104-3', munEmpresa: 'Medellín', depEmpresa: 'Antioquia' },
+    { nombre: 'Compañía de Galletas Noel S.A.S.', dirEmpresa: 'Carrera 52 # 2-38', munEmpresa: 'Medellín', depEmpresa: 'Antioquia' },
+    { nombre: 'Nutre Fríos S.A.S.', dirEmpresa: 'Carrera 64C # 104-3', munEmpresa: 'Medellín', depEmpresa: 'Antioquia' }, // misma dirección que Zenú (dicho por Carlos)
     { nombre: 'Alimentos Cárnicos S.A.S.', dirEmpresa: 'Calle 25A Sur # 48-150', munEmpresa: 'Envigado', depEmpresa: 'Antioquia' }
   ];
   var CAMPOS_EMPRESA = ['dirEmpresa', 'munEmpresa', 'depEmpresa'];
