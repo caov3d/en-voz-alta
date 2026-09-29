@@ -35,7 +35,8 @@
   form, .paso{display:flex;flex-direction:column;gap:16px}
   label.campo{display:flex;flex-direction:column;gap:6px;font-weight:700}
   label.campo small{font-weight:400;color:var(--gris)}
-  .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  #contratos{display:grid;grid-template-columns:1fr 1fr}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
   @media (max-width:380px){.fila{grid-template-columns:1fr}}
   input[type=text],input[type=tel],input[type=email],input[type=date]{font:inherit;font-size:19px;padding:13px;border:2px solid var(--linea);background:var(--campo);color:#fff;border-radius:8px;width:100%;min-height:52px}
   input:focus-visible{outline:3px solid var(--amarillo);outline-offset:1px;border-color:transparent}
@@ -98,9 +99,9 @@
       <label class="campo">Fecha de nacimiento<input type="date" id="nacimiento" required></label>
       <div class="fila">
         <label class="campo">Celular<input type="tel" id="celular" autocomplete="tel" inputmode="tel" maxlength="16" required></label>
-        <label class="campo">Teléfono fijo <small>Opcional</small><input type="tel" id="fijo" inputmode="tel" maxlength="16"></label>
+        <label class="campo"><span>Teléfono fijo <small>(opcional)</small></span><input type="tel" id="fijo" inputmode="tel" maxlength="16"></label>
       </div>
-      <label class="campo">Correo electrónico <small>Opcional</small><input type="email" id="correo" autocomplete="email" maxlength="80"></label>
+      <label class="campo"><span>Correo electrónico <small>(opcional)</small></span><input type="email" id="correo" autocomplete="email" maxlength="80"></label>
     </section>
 
     <!-- Paso 2 -->
@@ -109,8 +110,8 @@
       <p class="tip">Los datos de la empresa ya van llenos. Cámbialos solo si trabajas en otra sede.</p>
       <label class="campo">Empresa<input type="text" id="empresa" maxlength="80" required></label>
       <div class="fila">
-        <label class="campo">Oficio<input type="text" id="oficio" maxlength="60" placeholder="Ej.: operario de empaque" required></label>
-        <label class="campo">Registro <small>Opcional. Tu código de empleado, si lo sabes</small><input type="text" id="registro" maxlength="20"></label>
+        <label class="campo">Oficio<input type="text" id="oficio" maxlength="60" placeholder="Ej.: empaque" required></label>
+        <label class="campo"><span>Registro <small>(opcional)</small></span><input type="text" id="registro" maxlength="20" placeholder="Código de empleado"></label>
       </div>
       <fieldset>
         <legend>Tipo de contrato</legend>
