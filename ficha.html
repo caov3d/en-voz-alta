@@ -204,6 +204,7 @@
 <script src="comun.js"></script>
 <script>
   document.getElementById("volverInicio").href = './?o=' + encodeURIComponent(ORIGEN);
+  contarEscaneo(); // el QR que abre directo la ficha también cuenta (si viene de la página de inicio, ya se contó)
   var CAMPOS = ['nombres','apellidos','cedula','nacimiento','celular','fijo','correo','empresa','oficio','registro',
     'ingreso','dirEmpresa','munEmpresa','depEmpresa','dirResidencia','munResidencia','depResidencia'];
   var OBLIGATORIOS = {
@@ -249,6 +250,7 @@
   $('empresa').addEventListener('change', function () { this.classList.remove('malo'); aplicarEmpresa(); });
   if (b.contrato) { var r = document.querySelector('input[name="contrato"][value="' + b.contrato + '"]'); if (r) r.checked = true; }
   if (b.paso) paso = Math.min(4, Math.max(1, b.paso));
+  if (b.nombres || b.cedula) marcarPaso('retomo', 'volvió en el paso ' + paso);
   idEnvio = b.id || null;
 
   function guardar() {
@@ -280,6 +282,7 @@
   // ---------- pasos ----------
   function mostrar(n) {
     paso = n;
+    marcarPaso('ficha' + n);
     document.querySelectorAll('[data-paso]').forEach(function (s) { s.hidden = Number(s.dataset.paso) !== n; });
     document.querySelectorAll('.progreso i').forEach(function (i, k) { i.classList.toggle('on', k < n); });
     $('pasoNum').textContent = 'Paso ' + n + ' de 4';
@@ -324,7 +327,7 @@
   $('siguiente').addEventListener('click', function () {
     err.textContent = '';
     var e = validar(paso);
-    if (e) { err.textContent = e; return; }
+    if (e) { err.textContent = e; marcarPaso('error', 'Ficha paso ' + paso + ': ' + e, false); return; }
     if (paso < 4) { mostrar(paso + 1); return; }
     enviarFicha();
   });
@@ -377,6 +380,7 @@
     btn.disabled = true; btn.textContent = 'Enviando…';
     enviar(datos, function () { btn.textContent = 'Casi listo…'; }).then(function (res) {
       if (res && res.ok) {
+        marcarPaso('ficha_ok');
         enviados = datos;
         borrarBorrador();
         $('f').hidden = true; document.querySelector('.progreso').hidden = true; $('pasoNum').hidden = true;
@@ -384,9 +388,11 @@
         window.scrollTo(0, 0);
       } else {
         err.textContent = (res && res.error) || 'No se pudo enviar. Intenta otra vez.';
+        marcarPaso('error', 'Ficha al enviar: ' + err.textContent, false);
         btn.disabled = false; btn.textContent = 'Enviar mi solicitud';
       }
     }).catch(function () {
+      marcarPaso('fallo', 'Ficha: sin señal o Google no respondió', false);
       err.textContent = 'No se pudo enviar. Revisa tu señal y dale Enviar otra vez: no se va a repetir. Tus datos siguen guardados.';
       btn.disabled = false; btn.textContent = 'Enviar mi solicitud';
     });
@@ -394,6 +400,7 @@
 
   // ---------- seguir después ----------
   $('despues').addEventListener('click', function () {
+    marcarPaso('despues', 'en el paso ' + paso);
     guardar();
     var url = enlaceFicha();
     $('waEnlace').href = 'https://wa.me/?text=' + encodeURIComponent('Mi solicitud de afiliación a Sintralimenticia, para terminarla cuando pueda: ' + url);
@@ -428,6 +435,7 @@
     });
   }
   $('descargar').addEventListener('click', function () {
+    marcarPaso('copia');
     if (!enviados || !window.jspdf) { alert('No se pudo preparar el PDF. Pídele la copia a tu delegado.'); return; }
     var d = enviados, btn = this;
     btn.disabled = true; btn.textContent = 'Preparando…';
