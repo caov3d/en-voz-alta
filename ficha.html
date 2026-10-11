@@ -306,8 +306,12 @@
     });
     if (faltan.length) { $(faltan[0]).focus(); return 'Completa los campos marcados en amarillo.'; }
     if (n === 1) {
-      if ($('cedula').value.replace(/\D/g, '').length < 5) { $('cedula').classList.add('malo'); return 'Revisa el número de cédula.'; }
-      if ($('celular').value.replace(/\D/g, '').length < 7) { $('celular').classList.add('malo'); return 'Revisa el número de celular.'; }
+      var ced = $('cedula').value.replace(/\D/g, '');
+      if (ced.length < 6 || ced.length > 10 || /(\d)\1{4,}/.test(ced)) { $('cedula').classList.add('malo'); return 'Revisa el número de cédula (de 6 a 10 números, tal como sale en tu documento).'; }
+      var cel = $('celular').value.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, '');
+      if (!/^3\d{9}$/.test(cel)) { $('celular').classList.add('malo'); return 'Revisa tu celular: son 10 números y empieza por 3.'; }
+      var nac = new Date($('nacimiento').value), edad = (Date.now() - nac) / 31557600000;
+      if (!(edad >= 16 && edad <= 80)) { $('nacimiento').classList.add('malo'); return 'Revisa tu fecha de nacimiento.'; }
     }
     if (n === 2 && !document.querySelector('input[name="contrato"]:checked')) return 'Escoge tu tipo de contrato (si no sabes, toca "No sé").';
     if (n === 4) {

@@ -178,7 +178,7 @@
       origen: ORIGEN
     };
     if (datos.nombre.length < 2) { err.textContent = 'Escribe tu nombre.'; return; }
-    if (datos.whatsapp.replace(/\D/g, '').length < 7) { err.textContent = 'Revisa el número de WhatsApp.'; return; }
+    if (!/^3\d{9}$/.test(datos.whatsapp.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, ''))) { err.textContent = 'Revisa tu WhatsApp: son 10 números y empieza por 3.'; return; }
     if (!datos.autoriza) { err.textContent = 'Para guardar tus datos necesitamos tu autorización.'; return; }
 
     btn.disabled = true;
